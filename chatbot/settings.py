@@ -12,11 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
-from environ import Env
 import pymysql
+from environ import Env
+
 pymysql.install_as_MySQLdb()
-
-
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -50,7 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'chat.apps.ChatConfig',
+    "chat.apps.ChatConfig",
 ]
 
 MIDDLEWARE = [
@@ -68,8 +67,7 @@ ROOT_URLCONF = "chatbot.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": []
-        ,
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -97,16 +95,13 @@ DATABASES = {
         "HOST": "0.0.0.0",
         "PORT": "3306",
     },
-
-    "mongo": {
-        "ENGINE": "djongo",
-        "NAME": env("DB_NAME"),
-        "CLIENT": {
-            "host": env("MONGO_URL"),
-        }
-    }
-
-
+    # "mongo": {
+    #     "ENGINE": "djongo",
+    #     "NAME": env("DB_NAME"),
+    #     "CLIENT": {
+    #         "host": env("MONGO_URL"),
+    #     }
+    # }
 }
 
 
