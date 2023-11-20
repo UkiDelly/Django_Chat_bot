@@ -12,8 +12,19 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+from environ import Env
+
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = Env()
+env_path = BASE_DIR / ".env"
+if env_path.exists():
+    with env_path.open("rt", encoding="utf8") as f:
+        env.read_env(f, overwrite=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +36,7 @@ SECRET_KEY = "django-insecure-499jyb04j)n!h45^7qb%9%(fkzrbvd5hs7j@!_co2@0=t)865k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -55,7 +66,7 @@ ROOT_URLCONF = "chatbot.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
+        "DIRS": []
         ,
         "APP_DIRS": True,
         "OPTIONS": {
@@ -77,9 +88,23 @@ WSGI_APPLICATION = "chatbot.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env("DB_NAME"),
+        "USER": env("MARIA_DB_USER"),
+        "PASSWORD": env("MARIA_DB_PASSWORD"),
+        "HOST": "0.0.0.0",
+        "PORT": "3306",
+    },
+
+    "mongo": {
+        "ENGINE": "djongo",
+        "NAME": env("DB_NAME"),
+        "CLIENT": {
+            "host": env("MONGO_URL"),
+        }
     }
+
+
 }
 
 
