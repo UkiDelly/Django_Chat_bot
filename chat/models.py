@@ -3,18 +3,18 @@ from django.db import models
 
 
 class BaseTime(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True, auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True
 
 
-class UserChat(BaseTime):
+class ChatRoom(BaseTime):
     user = models.ForeignKey("accounts.MyUser", on_delete=models.CASCADE)
-    name = models.CharField()
+    name = models.CharField(max_length=100)
 
     class Meta:
-        db_table = "user_chat"
+        db_table = "chat_room"
 
 
 class ChatHistory(BaseTime):
@@ -23,7 +23,7 @@ class ChatHistory(BaseTime):
         USER = 1
         ASSISTANT = 2
 
-    chat_room = models.ForeignKey("chat.UserChat", on_delete=models.CASCADE)
+    chat_room = models.ForeignKey("chat.ChatRoom", on_delete=models.CASCADE)
     message = models.TextField()
     role = models.IntegerField(choices=Role.choices)
 
