@@ -79,3 +79,26 @@ class MyUser(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "nickname": self.nickname,
+            "email": self.email,
+            "sns_id": self.sns_id,
+            "social_type": self.social_type,
+            "created_at": str(self.created_at)
+        }
+
+
+class MyTokenModel:
+
+    def __init__(self, access_token, refresh_token):
+        self.access_token = str(access_token)
+        self.refresh_token = str(refresh_token)
+
+    def to_json(self):
+        return {
+            "access_token": self.access_token,
+            "refresh_token": self.refresh_token
+        }

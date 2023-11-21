@@ -1,50 +1,56 @@
-from rest_framework import status
+from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import Token
 
-from accounts.serializers import RegisterRequestSerializer, UserInfoWithTokenSerializer, UserInfoSerializer
+from accounts.models import MyUser, MyTokenModel
+from accounts.serializers import RegisterDto, UserInfoWithTokenDto, LoginDto, UserInfoDto
 
 
-class RegisterView(APIView):
-    http_method_names = ['post']
+class RegisterAPI(APIView):
+    http_method_names = ["post"]
 
     def post(self, request):
-        serializer = RegisterRequestSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.save()
+        serializer = RegisterDto(data=request.data)
 
-            # JWT 발급
-            token: Token = TokenObtainPairSerializer.get_token(user)
-            user_info = UserInfoSerializer(data=serializer.data)
-            user_info.is_valid()
-            user_info_with_token = UserInfoWithTokenSerializer(
-                data={"user": user_info.data, "access_token": str(token.access_token), "refresh_token": str(token)})
-            user_info_with_token.is_valid()
-            return Response(user_info_with_token.data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            user: MyUser = MyUser.objects.create_user(
+                nickname=serializer.data["nickname"],
+                email=serializer.data["email"],
+                social_type=serializer.data["social_type"],
+                sns_id=serializer.data["sns_id"],
+                password=serializer.data["password"],
+            )
+            token_obj = TokenObtainPairSerializer.get_token(user)
+            token = MyTokenModel(token_obj.access_token, token_obj)
+            dto = UserInfoWithTokenDto(user, token)
+            return Response(dto.to_json(), status=201)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=400)
 
-# Create your views here.
-# class LoginApi(APIView):
-#     http_method_names = ['post']
-#
-#     def post(self, request: HttpRequest):
-#         body = json.loads(request.body)
-#
-#         if body.get('social_type') == 'email':
-#             serializer = EmailLoginSerializer(data=body)
-#             user = MyUser.objects.get(email=serializer.validated_data['email'])
-#         else:
-#             serializer = GoogleLoginSerializer(data=body)
-#             user = MyUser.objects.get(sns_id=serializer.validated_data['sns_id'],
-#                                       social_type=serializer.validated_data['social_type'],
-#                                       email=serializer.validated_data['email'])
-#
-#             get_token_model()
-#         if serializer.is_valid(raise_exception=True):
-#
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginAPI(APIView):
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest):
+        serializer = LoginDto(data=request.data)
+        if serializer.is_valid():
+            user = get_object_or_404(MyUser, email=serializer.data["email"])
+            token_obj = TokenObtainPairSerializer.get_token(user)
+            token = MyTokenModel(token_obj.access_token, token_obj)
+            dto = UserInfoWithTokenDto(user, token)
+            return Response(dto.to_json(), status=200)
+        else:
+            return Response(serializer.errors, status=400)
+
+
+class MyInfoAPI(APIView):
+    http_method_names = ["get", "patch"]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        dto = UserInfoDto(user)
+        return Response(dto.data, status=200)

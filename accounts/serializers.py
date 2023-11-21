@@ -1,41 +1,38 @@
-from django.contrib.auth import get_user_model
+from dataclasses import dataclass
+
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer, Serializer
 
-from accounts.models import MyUser
-
-User: MyUser = get_user_model()
+from accounts.models import MyUser, MyTokenModel
 
 
-class UserInfoSerializer(ModelSerializer):
+class UserInfoDto(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ["nickname", "email", "sns_id", "social_type"]
+        model = MyUser
+        fields = ['id', 'nickname', 'email', 'sns_id', 'social_type']
 
 
-class RegisterRequestSerializer(ModelSerializer):
+class MyTokenDto(serializers.Serializer):
+    access_token = serializers.CharField
+    refresh_token = serializers.CharField
+
+
+@dataclass
+class UserInfoWithTokenDto:
+    user: MyUser
+    token: MyTokenModel
+
+    def to_json(self):
+        return {"user": self.user.to_json(), "token": self.token.to_json()}
+
+
+class RegisterDto(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ["nickname", "email", "password", "sns_id", "social_type"]
-
-    def create(self, validated_data: dict):
-        nickname = validated_data.get("nickname")
-        email = validated_data.get("email")
-        social_type = validated_data.get("social_type")
-        password = validated_data.get("password", None)
-        sns_id = validated_data.get("sns_id", None)
-
-        user: MyUser = User.objects.create_user(
-            nickname=nickname,
-            email=email,
-            sns_id=sns_id
-        )
-        if password:
-            user.set_password(password)
-        return user
+        model = MyUser
+        fields = "__all__"
 
 
-class UserInfoWithTokenSerializer(Serializer):
-    user = UserInfoSerializer()
-    access_token = serializers.CharField()
-    refresh_token = serializers.CharField()
+class LoginDto(serializers.Serializer):
+    email = serializers.EmailField()
+    sns_id = serializers.CharField(allow_null=True, allow_blank=True)
+    social_type = serializers.ChoiceField(choices=MyUser.SocialType.choices)
+    password = serializers.CharField(allow_null=True, allow_blank=True)
