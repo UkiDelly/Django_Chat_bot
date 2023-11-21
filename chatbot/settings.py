@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "channels",
     "chat.apps.ChatConfig",
+    "accounts.apps.AccountsConfig"
 ]
 
 MIDDLEWARE = [
@@ -94,13 +95,6 @@ DATABASES = {
         "HOST": "0.0.0.0",
         "PORT": "3306",
     },
-    # "mongo": {
-    #     "ENGINE": "djongo",
-    #     "NAME": env("DB_NAME"),
-    #     "CLIENT": {
-    #         "host": env("MONGO_URL"),
-    #     }
-    # }
 }
 
 # Password validation
@@ -141,3 +135,5 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "accounts.MyUser"
