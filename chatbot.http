@@ -1,0 +1,28 @@
+POST http://localhost:8000/accounts/register/
+Content-Type: application/json
+
+{
+  "email": "test@gmail.com",
+  "nickname": "test",
+  "sns_id": "1",
+  "password": "wjdrmsdud0922",
+  "social_type": "email"
+}
+
+###
+
+POST http://localhost:8000/accounts/login/
+Content-Type: application/json
+
+{
+  "email": "test@gmail.com",
+  "sns_id": "1",
+  "password": "wjdrmsdud0922",
+  "social_type": "google"
+}
+
+###
+GET http://localhost:8000/accounts/myinfo/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAwNTU1NjcxLCJpYXQiOjE3MDA1NTIwNzEsImp0aSI6ImFkYTE0Y2VmMmY0NzRmMWM5YzhkMDcyMjAyNjIyNDUxIiwidXNlcl9pZCI6MjR9.OgjyFZ3OznQgIjgWdmz-NQkuw_zgYkP-YEwB_LNe4sU
+

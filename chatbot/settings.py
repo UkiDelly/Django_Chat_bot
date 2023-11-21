@@ -40,6 +40,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
 
     # apps
     "chat.apps.ChatConfig",
+    "accounts.apps.AccountsConfig"
 ]
 
 MIDDLEWARE = [
@@ -90,7 +92,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "chatbot.wsgi.application"
+# WSGI_APPLICATION = "chatbot.wsgi.application"
+ASGI_APPLICATION = "chatbot.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -104,13 +107,6 @@ DATABASES = {
         "HOST": "0.0.0.0",
         "PORT": "3306",
     },
-    # "mongo": {
-    #     "ENGINE": "djongo",
-    #     "NAME": env("DB_NAME"),
-    #     "CLIENT": {
-    #         "host": env("MONGO_URL"),
-    #     }
-    # }
 }
 
 # Password validation
@@ -134,9 +130,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
@@ -152,6 +148,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTH_USER_MODEL = "accounts.MyUser"
 # DRF 설정
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
