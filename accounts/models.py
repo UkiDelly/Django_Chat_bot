@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
-    def create_user(self, nickname, email, password, social_type="email", sns_id=None):
+    def create_user(self, nickname, email, social_type="email", sns_id=None, password=None):
         if not email:
             raise ValueError("이메일을 입력해주세요")
 
@@ -63,6 +63,9 @@ class MyUser(AbstractBaseUser):
     REQUIRED_FIELDS = [
         "nickname",
     ]
+
+    class Meta:
+        db_table = "user"
 
     def __str__(self):
         return self.nickname
