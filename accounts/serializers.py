@@ -36,3 +36,7 @@ class LoginDto(serializers.Serializer):
     sns_id = serializers.CharField(allow_null=True, allow_blank=True)
     social_type = serializers.ChoiceField(choices=MyUser.SocialType.choices)
     password = serializers.CharField(allow_null=True, allow_blank=True)
+
+
+class NicknameChangeDto(serializers.Serializer):
+    nickname = serializers.CharField()

@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from accounts.models import MyUser, MyTokenModel
-from accounts.serializers import RegisterDto, UserInfoWithTokenDto, LoginDto, UserInfoDto
+from accounts.serializers import RegisterDto, UserInfoWithTokenDto, LoginDto, UserInfoDto, NicknameChangeDto
 
 
 class RegisterAPI(APIView):
@@ -54,3 +54,15 @@ class MyInfoAPI(APIView):
         user = request.user
         dto = UserInfoDto(user)
         return Response(dto.data, status=200)
+
+    def patch(self, request: HttpRequest):
+        serializer = NicknameChangeDto(data=request.data)
+
+        if serializer.is_valid():
+            user = request.user
+            user.nickname = serializer.data["nickname"]
+            user.save()
+            return Response(UserInfoDto(user).data, status=200)
+
+        else:
+            return Response(serializer.errors, status=400)
