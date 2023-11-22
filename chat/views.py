@@ -55,6 +55,7 @@ class ChatRoomViewSet(ModelViewSet):
 
 class ChatHistoryApiView(ListAPIView):
     queryset = ChatHistory.objects.all()
+    serializer_class = ChatHistoryDto
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
