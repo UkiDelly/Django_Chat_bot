@@ -25,9 +25,9 @@ application = ProtocolTypeRouter(
         "http": get_asgi_application(),
         "websocket":
             AllowedHostsOriginValidator(
-                
+
                 WebSocketJWTAuthMiddleWare(
-                    URLRouter([re_path(r"chat/(?P<room_name>\w+)/$", ChatConsumer.as_asgi())])
+                    URLRouter([re_path(r"chat/(?P<room_id>\w+)/$", ChatConsumer.as_asgi())])
                 )
             )
     }
