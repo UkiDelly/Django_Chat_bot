@@ -65,6 +65,10 @@ class ChatHistoryApiView(APIView):
         except Http404:
             return Response({"message": "존재하지 않는 채팅방입니다."}, status=HTTP_404_NOT_FOUND)
 
+        chat_history = ChatHistory.objects.filter(chat_room=chat_room)
+        serializer = ChatHistoryDto(chat_history, many=True)
+        data = {"data": serializer.data}
+        return Response(data, status=200)
 
-class ChatHistoryViewSet(ModelViewSet):
-    pass
+    def post(self, request, *args, **kwargs):
+        pass
