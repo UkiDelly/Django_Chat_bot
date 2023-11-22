@@ -69,6 +69,3 @@ class ChatHistoryApiView(APIView):
         serializer = ChatHistoryDto(chat_history, many=True)
         data = {"data": serializer.data}
         return Response(data, status=200)
-
-    def post(self, request, *args, **kwargs):
-        pass
