@@ -19,7 +19,6 @@ class ChatRoom(BaseTime):
 
 class ChatHistory(BaseTime):
     class Role(models.IntegerChoices):
-        SYSTEM = 0
         USER = 1
         ASSISTANT = 2
 
@@ -29,3 +28,11 @@ class ChatHistory(BaseTime):
 
     class Meta:
         db_table = "chat_history"
+
+
+class SystemPromp(BaseTime):
+    chat_room = models.ForeignKey("chat.ChatRoom", on_delete=models.CASCADE)
+    content = models.TextField()
+
+    class Meta:
+        db_table = "system_prompt"
