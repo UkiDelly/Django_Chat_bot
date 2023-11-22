@@ -16,6 +16,11 @@ class ChatRoomViewSet(ModelViewSet):
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
+    def list(self, request: HttpRequest, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"chat_rooms": serializer.data}, status=200)
+
     def create(self, request: HttpRequest, *args, **kwargs):
         serializer = CreateChatRoomDto(data=request.data)
 
@@ -24,3 +29,7 @@ class ChatRoomViewSet(ModelViewSet):
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
+
+
+class ChatHistoryViewSet(ModelViewSet):
+    pass
