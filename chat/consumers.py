@@ -1,23 +1,36 @@
 import json
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from django.contrib.auth.models import User
+
+from accounts.models import MyUser
+from chat.utils import *
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
+
     async def connect(self):
-        room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        user: User = self.scope["user"]
-        # if self.scope["user"].is_authenticated:  # self.scope["user"].is_anonymous:
-        #     await self.close()
-        # else:
-        print(user.is_authenticated)
-        await self.accept()
-        await self.send("소켓 연결이 되었습니다.")
+        user: MyUser = self.scope["user"]
+        if user.is_authenticated:
+            room_id = self.scope["url_route"]["kwargs"]["room_id"]
+            chat_room = await get_chat_room(room_id)
+
+            if chat_room is None:
+                await self.close()
+                return
+            else:
+                await self.accept()
+        else:
+            await self.close()
+
+    async def disconnect(self, close_code):
+        await self.send("소켓 연결이 종료되었습니다.")
 
     async def receive_json(self, content, **kwargs):
-        print(content)
-        await self.send_json(content)
+        room_id = self.scope["url_route"]["kwargs"]["room_id"]
+        user_message = await convert_message(content)
+        await add_chat_history(room_id, user_message.content, 1)
+        await ask_gpt(room_id)
+        await self.send_json({})
 
     @classmethod
     async def encode_json(cls, content):

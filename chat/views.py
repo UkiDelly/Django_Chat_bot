@@ -1,9 +1,7 @@
-from django.http import HttpRequest, Http404
-from rest_framework.generics import get_object_or_404
+from django.http import HttpRequest
+from rest_framework.generics import get_object_or_404, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from chat.models import ChatRoom, SystemPromp, ChatHistory
@@ -55,17 +53,10 @@ class ChatRoomViewSet(ModelViewSet):
         return Response(data, status=200)
 
 
-class ChatHistoryApiView(APIView):
-    http_method_names = ["get", 'post']
+class ChatHistoryApiView(ListAPIView):
+    queryset = ChatHistory.objects.all()
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        try:
-            chat_room = get_object_or_404(ChatRoom.objects.all(), pk=kwargs.get("room_id"))
-        except Http404:
-            return Response({"message": "존재하지 않는 채팅방입니다."}, status=HTTP_404_NOT_FOUND)
-
-        chat_history = ChatHistory.objects.filter(chat_room=chat_room)
-        serializer = ChatHistoryDto(chat_history, many=True)
-        data = {"data": serializer.data}
-        return Response(data, status=200)
+    def get_queryset(self):
+        chat_room = get_object_or_404(ChatRoom, pk=self.kwargs["room_id"])
+        return self.queryset.filter(chat_room=chat_room)
