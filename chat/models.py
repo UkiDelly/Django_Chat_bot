@@ -30,7 +30,7 @@ class ChatHistory(BaseTime):
         db_table = "chat_history"
 
 
-class SystemPromp(models.Model):
+class SystemPromp(BaseTime):
     chat_room = models.ForeignKey("chat.ChatRoom", on_delete=models.CASCADE)
     content = models.TextField()
 
