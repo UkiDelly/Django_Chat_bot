@@ -75,13 +75,18 @@ class AutoLoginAPI(TokenRefreshView):
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
 
-        # Check if the refresh token is valid
+        # access_token 토큰 발급이 정상적으로 완료 되었을때
         if response.status_code == 200:
-            # Redirect to the login API
             access_token = response.data.get("access")
+
+            # access_token를 검증하여 user_id를 추출
             user_id = AccessToken(access_token)["user_id"]
             user = get_object_or_404(MyUser, pk=user_id)
+
+            # 유저 정보를 가져와서 직렬화
             user_data = UserInfoDto(user).data
+
+            # response의 data를 벼경
             data = {"user": user_data, "access_token": access_token}
             response.data = data
 
