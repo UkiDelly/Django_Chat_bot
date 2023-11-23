@@ -4,9 +4,14 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from accounts.models import MyUser
 from chat.utils import *
+from open_ai.openai_setting import MyOpenAiClient
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
+
+    def __init__(self):
+        self.client = MyOpenAiClient()
+        super().__init__()
 
     async def connect(self):
         user: MyUser = self.scope["user"]
@@ -29,8 +34,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         room_id = self.scope["url_route"]["kwargs"]["room_id"]
         user_message = await convert_message(content)
         await add_chat_history(room_id, user_message.content, 1)
-        await ask_gpt(room_id)
-        await self.send_json({})
+        res = await ask_gpt(room_id, self.client)
+        await self.send_json(res.__dict__)
 
     @classmethod
     async def encode_json(cls, content):
