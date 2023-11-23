@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from accounts.models import MyUser, MyTokenModel
 from accounts.serializers import RegisterDto, UserInfoWithTokenDto, LoginDto, UserInfoDto, NicknameChangeDto
@@ -66,3 +68,21 @@ class MyInfoAPI(APIView):
 
         else:
             return Response(serializer.errors, status=400)
+
+
+class AutoLoginAPI(TokenRefreshView):
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+
+        # Check if the refresh token is valid
+        if response.status_code == 200:
+            # Redirect to the login API
+            access_token = response.data.get("access")
+            user_id = AccessToken(access_token)["user_id"]
+            user = get_object_or_404(MyUser, pk=user_id)
+            user_data = UserInfoDto(user).data
+            data = {"user": user_data, "access_token": access_token}
+            response.data = data
+
+        return response
