@@ -24,6 +24,10 @@ class SystemPrompDto(serializers.ModelSerializer):
         fields = ["id", "content", "created_at"]
 
 
+class CreateSystemPrompDto(serializers.Serializer):
+    content = serializers.CharField(max_length=None)
+
+
 class ChatHistoryDto(serializers.ModelSerializer):
     class Meta:
         model = ChatHistory

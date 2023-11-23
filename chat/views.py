@@ -1,11 +1,12 @@
-from django.http import HttpRequest
+from django.http import HttpRequest, Http404
 from rest_framework.generics import get_object_or_404, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from chat.models import ChatRoom, SystemPromp, ChatHistory
-from chat.serializers import ChatRoomDto, CreateChatRoomDto, SystemPrompDto, ChatRoomInfoDto, ChatHistoryDto
+from chat.serializers import ChatRoomDto, CreateChatRoomDto, SystemPrompDto, ChatRoomInfoDto, ChatHistoryDto, \
+    CreateSystemPrompDto
 
 
 # Create your views here.
@@ -61,3 +62,26 @@ class ChatHistoryApiView(ListAPIView):
     def get_queryset(self):
         chat_room = get_object_or_404(ChatRoom, pk=self.kwargs["room_id"])
         return self.queryset.filter(chat_room=chat_room)
+
+
+class SystemPrompViewSet(ModelViewSet):
+    queryset = SystemPromp.objects.all()
+    serializer_class = SystemPrompDto
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        chat_room = get_object_or_404(ChatRoom, pk=self.kwargs["room_id"])
+        return self.queryset.filter(chat_room=chat_room)
+
+    def create(self, request: HttpRequest, *args, **kwargs):
+        serializer = CreateSystemPrompDto(data=request.data)
+
+        if serializer.is_valid():
+            try:
+                chat_room = get_object_or_404(ChatRoom, pk=self.kwargs["room_id"])
+            except Http404:
+                return Response({"message": "채탕 채팅룸을 찾을 수 없습니다."}, status=404)
+            SystemPromp.objects.create(content=serializer.data["content"], chat_room=chat_room).save()
+            return Response(serializer.data, status=201)
+        else:
+            return Response(serializer.errors, status=400)
