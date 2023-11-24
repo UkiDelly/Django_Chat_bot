@@ -33,21 +33,20 @@ def get_all_chat_history(room_id):
     return history
 
 
-async def ask_gpt(room_id, client: MyOpenAiClient) -> AssistantMessage:
+async def ask_gpt(room_id, client: MyOpenAiClient) -> str:
     system_prompt = await get_all_system_prompts(room_id)
     history = await get_all_chat_history(room_id)
     client.set_system(*system_prompt)
     client.set_hitsory(history)
-    messages = list(map(lambda x: x.__dict__, system_prompt + history))
 
     res = await client.send()
     await add_chat_history(room_id, res.content, 2)
-    return res
+    return res.content
 
 
 @sync_to_async
-def convert_message(message: dict):
-    return UserMessage(message["message"])
+def convert_message(message: str):
+    return UserMessage(message)
 
 
 @sync_to_async

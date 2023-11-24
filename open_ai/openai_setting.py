@@ -9,12 +9,12 @@ class MyOpenAiClient():
     def __init__(self, ):
         self.client = AsyncOpenAI(
             api_key=env("OPEN_AI"))
-        self.sytem_promp = []
-        self.history = []
+        self.sytem_promp: list = []
+        self.history: list = []
         self.new_conversation: list[UserMessage | AssistantMessage] = []
 
     def set_system(self, *promp: SystemMessage):
-        self.sytem_promp = promp
+        self.sytem_promp = list(promp)
 
     def set_hitsory(self, history: list[UserMessage | AssistantMessage]):
         self.history = history
@@ -24,7 +24,8 @@ class MyOpenAiClient():
         self.new_conversation.append(user_message)
 
     def get_conversations(self):
-        return self.history + self.new_conversation
+        new_list = self.sytem_promp + self.history + self.new_conversation
+        return new_list
 
     async def send(self) -> AssistantMessage:
         res: ChatCompletion = await self.client.chat.completions.create(

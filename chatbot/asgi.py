@@ -15,7 +15,6 @@ from django.core.asgi import get_asgi_application
 from django.urls import re_path
 
 from chat.consumers import ChatConsumer
-from chatbot.jwt_middle_ware import WebSocketJWTAuthMiddleWare
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "chatbot.settings")
 
@@ -26,9 +25,9 @@ application = ProtocolTypeRouter(
         "websocket":
             AllowedHostsOriginValidator(
 
-                WebSocketJWTAuthMiddleWare(
-                    URLRouter([re_path(r"chat/(?P<room_id>\w+)/$", ChatConsumer.as_asgi())])
-                )
+                # WebSocketJWTAuthMiddleWare(
+                URLRouter([re_path(r"chat/(?P<room_id>\w+)/$", ChatConsumer.as_asgi())])
+                # )
             )
     }
 )
