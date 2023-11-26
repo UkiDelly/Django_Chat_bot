@@ -1,14 +1,15 @@
 from datetime import datetime
 
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
-    def create_user(self, nickname, email, social_type="email", sns_id=None, password=None):
+    def create_user(
+        self, nickname, email, social_type="email", sns_id=None, password=None
+    ):
         if not email:
             raise ValueError("이메일을 입력해주세요")
 
@@ -51,7 +52,7 @@ class MyUser(AbstractBaseUser):
         choices=SocialType.choices,
         default=SocialType.EMAIL,
     )
-    password = models.CharField(_('password'), max_length=128, blank=True, null=True)
+    password = models.CharField(_("password"), max_length=128, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -87,18 +88,13 @@ class MyUser(AbstractBaseUser):
             "email": self.email,
             "sns_id": self.sns_id,
             "social_type": self.social_type,
-            "created_at": str(self.created_at)
         }
 
 
 class MyTokenModel:
-
     def __init__(self, access_token, refresh_token):
         self.access_token = str(access_token)
         self.refresh_token = str(refresh_token)
 
     def to_json(self):
-        return {
-            "access_token": self.access_token,
-            "refresh_token": self.refresh_token
-        }
+        return {"access_token": self.access_token, "refresh_token": self.refresh_token}
