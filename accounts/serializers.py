@@ -8,7 +8,7 @@ from accounts.models import MyUser, MyTokenModel
 class UserInfoDto(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ["id", "nickname", "email", "sns_id", "social_type"]
+        fields = ["id", "nickname", "email", "sns_id", "social_type", "chat_count"]
 
 
 class MyTokenDto(serializers.Serializer):
@@ -28,8 +28,7 @@ class UserInfoWithTokenDto:
 class RegisterDto(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        # fields = "__all__"
-        exclude = ["created_at"]
+        exclude = ["created_at", "chat_count"]
 
 
 class LoginDto(serializers.Serializer):

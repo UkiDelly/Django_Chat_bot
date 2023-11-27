@@ -89,6 +89,7 @@ class MyUser(AbstractBaseUser):
             "email": self.email,
             "sns_id": self.sns_id,
             "social_type": self.social_type,
+            "chat_count": self.chat_count
         }
 
 

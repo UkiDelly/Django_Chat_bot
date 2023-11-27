@@ -56,11 +56,10 @@ def add_chat_history(room_id: int, message: str, role: int) -> bool:
     user = MyUser.objects.get(id=chat_room.user.id)
 
     if role == 1:
+        if user.chat_count >= 5:
+            return False
         user.chat_count += 1
         user.save()
-
-    if user.chat_count >= 5:
-        return False
 
     ChatHistory.objects.create(chat_room_id=room_id, message=message, role=role).save()
     return True
