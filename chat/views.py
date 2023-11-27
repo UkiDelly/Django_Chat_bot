@@ -65,6 +65,15 @@ class ChatRoomViewSet(ModelViewSet):
         }
         return Response(data, status=200)
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = ChatRoomDto(instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        else:
+            return Response(serializer.errors, status=400)
+
 
 class ChatHistoryApiView(ListAPIView):
     queryset = ChatHistory.objects.all()
