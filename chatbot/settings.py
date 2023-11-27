@@ -40,6 +40,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    # 서버 배포
     "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'dj_rest_auth.registration',
+    "django_crontab",
 
     # apps
     "chat.apps.ChatConfig",
@@ -177,3 +179,8 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'pk',
     'USER_ID_CLAIM': 'user_id',
 }
+
+# Cron Jobs
+CRONJOBS = [
+    ('* 0 * * *', 'chat.cron.reset_chat_count')
+]
