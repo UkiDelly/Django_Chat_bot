@@ -50,6 +50,7 @@ class LoginAPI(APIView):
         if serializer.is_valid():
             user = get_object_or_404(MyUser, email=serializer.data["email"])
             user.last_login = datetime.now()
+            user.save()
             token_obj = TokenObtainPairSerializer.get_token(user)
             token = MyTokenModel(token_obj.access_token, token_obj)
             dto = UserInfoWithTokenDto(user, token)

@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(
-        self, nickname, email, social_type="email", sns_id=None, password=None
+            self, nickname, email, social_type="email", sns_id=None, password=None
     ):
         if not email:
             raise ValueError("이메일을 입력해주세요")
@@ -56,6 +56,7 @@ class MyUser(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    chat_count = models.PositiveIntegerField(default=0, max_length=5)
 
     objects = CustomUserManager()
 
