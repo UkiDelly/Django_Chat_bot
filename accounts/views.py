@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +10,13 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from accounts.models import MyUser, MyTokenModel
-from accounts.serializers import RegisterDto, UserInfoWithTokenDto, LoginDto, UserInfoDto, NicknameChangeDto
+from accounts.serializers import (
+    RegisterDto,
+    UserInfoWithTokenDto,
+    LoginDto,
+    UserInfoDto,
+    NicknameChangeDto,
+)
 
 
 class RegisterAPI(APIView):
@@ -24,6 +32,7 @@ class RegisterAPI(APIView):
                 social_type=serializer.data["social_type"],
                 sns_id=serializer.data["sns_id"],
                 password=serializer.data["password"],
+
             )
             token_obj = TokenObtainPairSerializer.get_token(user)
             token = MyTokenModel(token_obj.access_token, token_obj)
@@ -40,6 +49,7 @@ class LoginAPI(APIView):
         serializer = LoginDto(data=request.data)
         if serializer.is_valid():
             user = get_object_or_404(MyUser, email=serializer.data["email"])
+            user.last_login = datetime.now()
             token_obj = TokenObtainPairSerializer.get_token(user)
             token = MyTokenModel(token_obj.access_token, token_obj)
             dto = UserInfoWithTokenDto(user, token)
@@ -71,7 +81,6 @@ class MyInfoAPI(APIView):
 
 
 class AutoLoginAPI(TokenRefreshView):
-
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
 
