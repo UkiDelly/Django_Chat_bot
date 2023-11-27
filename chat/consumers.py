@@ -40,14 +40,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room_id = self.scope["url_route"]["kwargs"]["room_id"]
         print(text_data)
         user_message = await convert_message(text_data)
-        await add_chat_history(room_id, user_message.content, 1)
+        add_res = await add_chat_history(room_id, user_message.content, 1)
+
+        if not add_res:
+            await self.close()
+            return
+
         res = await ask_gpt(room_id, self.client)
         print(res)
         await self.send(res)
-
-    # @classmethod
-    # async def encode_json(cls, content):
-    #     return json.dumps(
-    #         content,
-    #         ensure_ascii=False,
-    #     )

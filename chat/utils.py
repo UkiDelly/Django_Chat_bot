@@ -2,13 +2,14 @@ from asgiref.sync import sync_to_async
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
+from accounts.models import MyUser
 from chat.models import ChatRoom, SystemPromp, ChatHistory
 from open_ai.models import SystemMessage, UserMessage, AssistantMessage
 from open_ai.openai_setting import MyOpenAiClient
 
 
 @sync_to_async
-def get_chat_room(room_id: int):
+def get_chat_room(room_id: int) -> ChatRoom | None:
     try:
         return get_object_or_404(ChatRoom, pk=room_id)
     except Http404:
@@ -50,5 +51,16 @@ def convert_message(message: str):
 
 
 @sync_to_async
-def add_chat_history(room_id: int, message: str, role: int):
+def add_chat_history(room_id: int, message: str, role: int) -> bool:
+    chat_room = ChatRoom.objects.get(pk=room_id)
+    user = MyUser.objects.get(id=chat_room.user.id)
+
+    if role == 1:
+        user.chat_count += 1
+        user.save()
+
+    if user.chat_count >= 5:
+        return False
+
     ChatHistory.objects.create(chat_room_id=room_id, message=message, role=role).save()
+    return True
