@@ -17,14 +17,11 @@ from django.urls import re_path
 from chat.consumers import ChatConsumer
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "chatbot.settings")
-
-# application = get_asgi_application()
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         "websocket":
             AllowedHostsOriginValidator(
-
                 # WebSocketJWTAuthMiddleWare(
                 URLRouter([re_path(r"chat/(?P<room_id>\w+)/$", ChatConsumer.as_asgi())])
                 # )

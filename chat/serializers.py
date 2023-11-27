@@ -15,7 +15,6 @@ class ChatRoomDto(serializers.ModelSerializer):
 
 class CreateChatRoomDto(serializers.Serializer):
     name = serializers.CharField(max_length=100)
-    system_prompt = serializers.CharField(max_length=None)
 
 
 class SystemPrompDto(serializers.ModelSerializer):

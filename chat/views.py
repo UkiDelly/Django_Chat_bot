@@ -5,8 +5,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from chat.models import ChatRoom, SystemPromp, ChatHistory
-from chat.serializers import ChatRoomDto, CreateChatRoomDto, SystemPrompDto, ChatRoomInfoDto, ChatHistoryDto, \
-    CreateSystemPrompDto
+from chat.serializers import (
+    ChatRoomDto,
+    CreateChatRoomDto,
+    SystemPrompDto,
+    ChatRoomInfoDto,
+    ChatHistoryDto,
+    CreateSystemPrompDto,
+)
 
 
 # Create your views here.
@@ -27,9 +33,11 @@ class ChatRoomViewSet(ModelViewSet):
         serializer = CreateChatRoomDto(data=request.data)
 
         if serializer.is_valid():
-            chat_room = ChatRoom.objects.create(user=request.user, name=serializer.data["name"])
+            chat_room = ChatRoom.objects.create(
+                user=request.user, name=serializer.data["name"]
+            )
             chat_room.save()
-            SystemPromp.objects.create(content=serializer.data["system_prompt"], chat_room=chat_room).save()
+            serializer = ChatRoomDto(chat_room)
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
@@ -47,10 +55,14 @@ class ChatRoomViewSet(ModelViewSet):
         dto = ChatRoomInfoDto(
             instance_serializer.data,
             promps_serializer.data,
-            chat_history_serializer.data
+            chat_history_serializer.data,
         )
 
-        data = {"chat_room": dto.chat_room, "system_prompt": dto.system_prompt, "chat_history": dto.chat_history}
+        data = {
+            "chat_room": dto.chat_room,
+            "system_prompt": dto.system_prompt,
+            "chat_history": dto.chat_history,
+        }
         return Response(data, status=200)
 
 
@@ -81,7 +93,9 @@ class SystemPrompViewSet(ModelViewSet):
                 chat_room = get_object_or_404(ChatRoom, pk=self.kwargs["room_id"])
             except Http404:
                 return Response({"message": "채탕 채팅룸을 찾을 수 없습니다."}, status=404)
-            SystemPromp.objects.create(content=serializer.data["content"], chat_room=chat_room).save()
+            SystemPromp.objects.create(
+                content=serializer.data["content"], chat_room=chat_room
+            ).save()
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
