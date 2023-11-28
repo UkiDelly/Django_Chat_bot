@@ -18,10 +18,13 @@ distro==1.8.0
 dj-rest-auth==5.0.2
 Django==4.2.7
 django-allauth==0.58.2
+django-cors-headers==4.3.1
+django-crontab==0.7.1
 django-environ==0.11.2
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.0
 dnspython==2.4.2
+gunicorn==21.2.0
 h11==0.14.0
 httpcore==1.0.2
 httpx==0.25.1
@@ -58,4 +61,5 @@ Twisted==23.10.0
 txaio==23.1.1
 typing_extensions==4.8.0
 urllib3==2.1.0
+uvicorn==0.24.0.post1
 zope.interface==6.1
